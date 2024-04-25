@@ -91,7 +91,7 @@ import {Component} from "path"
 #Just like the local variable scope is inside a function, the scope of local state variables is inside a component.
 #Since usState is a normal JavaScript utility function, when we call it, usState gives us a state variable
 and then we recieve that state variable inside an array.
-#In order to modify data inside state variable, we use a second function as parameter. The industry convention to pass the second parameter is by adding the "set" keyword in front of the state variable. With the help of second
+#In order to modify data inside state variable, we use a function as second parameter. The industry convention to pass the second parameter is by adding the "set" keyword in front of the state variable. With the help of second
 parameter, we can modify the state variable.
 #The superpowerful variable (state variable) keep the UI layer in sync with the data layer. On the other hand, the normal JS Variable doesn't allow us to update the UI.
 
@@ -105,10 +105,18 @@ parameter, we can modify the state variable.
 -- React Virtaul DOM is basically a normal JS Object which we get upon creating a React Element.
 -- Diff Algortihm bascially finds out the difference between two virtual DOMs, the update virtual DOM and the
 previous virtual DOM.
--- In React 16, a new Algorithm to update the DOM came out. That Algorithm is known as Reconciliation.
+-- In React 16, a new Algorithm to update the DOM was introduced. That Algorithm is known as Reconciliation.
 -- Whenever something changes on the UI, this is known as Reconciliation.
--- React Fiber is the new way of finding the diff and updating the DOM
+-- React Fiber is the new way of finding the diff and updating the DOM.
+-- React Fiber is the new Reconciliation process to efficiently manipulate the DOM.
 -- Whenever there is any change in the state varibale, React will find out the difference between two virtual DOMs and it will re-render our component/it will update the DOM.
 
 #React is so fast because it does efficient DOM manipulation, thanks to virtual DOM
 #React is so fast because it has Diff Algorithm, which is very efficient
+
+#React Hooks - useEffect()
+
+- useEffect() function will take two arguments - the callback function and depedency array
+- The callback function will be called after the React component renders
+
+NOTE: Whenever state varibale updates, React triggers a Reconciliation cycle (re-renders component)

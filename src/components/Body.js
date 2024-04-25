@@ -1,86 +1,67 @@
 import RestaurantCard from "./RestaurantCard";
-import { useState } from "react";
-import resList from "../utils/mockData";
+import { useState, useEffect } from "react";
+import Shimmer from "./Shimmer";
 
 const Body = () => {
   //Local State Variable - Super Powerful Variable
-  const [listOfRestaurants, setListOfRestaurants] = useState(resList);
+  const [listOfRestaurants, setListOfRestaurants] = useState([]);
+  const [filteredRestaurantCards, setFilteredRestaurantCards] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
-  //Normal JS Variable
-  let listOfRestaurantsJS = [
-    {
-      info: {
-        id: "55473",
-        name: "Pizza Hut",
-        cloudinaryImageId: "2b4f62d606d1b2bfba9ba9e5386fabb7",
-        locality: "Sector 10",
-        areaName: "Rohini",
-        costForTwo: "₹350 for two",
-        cuisines: ["Pizzas"],
-        avgRating: 3.8,
-        parentId: "721",
-        avgRatingString: "4.0",
-        totalRatingsString: "5K+",
-        sla: {
-          deliveryTime: 36,
-          lastMileTravel: 2.3,
-          serviceability: "SERVICEABLE",
-          slaString: "35-40 mins",
-          lastMileTravelString: "2.3 km",
-          iconType: "ICON_TYPE_EMPTY",
-        },
-      },
-    },
-    {
-      info: {
-        id: "55474",
-        name: "Dominos",
-        cloudinaryImageId: "2b4f62d606d1b2bfba9ba9e5386fabb7",
-        locality: "Sector 10",
-        areaName: "Rohini",
-        costForTwo: "₹350 for two",
-        cuisines: ["Pizzas"],
-        avgRating: 4.5,
-        parentId: "721",
-        avgRatingString: "4.0",
-        totalRatingsString: "5K+",
-        sla: {
-          deliveryTime: 36,
-          lastMileTravel: 2.3,
-          serviceability: "SERVICEABLE",
-          slaString: "35-40 mins",
-          lastMileTravelString: "2.3 km",
-          iconType: "ICON_TYPE_EMPTY",
-        },
-      },
-    },
-    {
-      info: {
-        id: "55475",
-        name: "McDonald's",
-        cloudinaryImageId: "2b4f62d606d1b2bfba9ba9e5386fabb7",
-        locality: "Sector 10",
-        areaName: "Rohini",
-        costForTwo: "₹350 for two",
-        cuisines: ["Pizzas"],
-        avgRating: 4.1,
-        parentId: "721",
-        avgRatingString: "4.0",
-        totalRatingsString: "5K+",
-        sla: {
-          deliveryTime: 36,
-          lastMileTravel: 2.3,
-          serviceability: "SERVICEABLE",
-          slaString: "35-40 mins",
-          lastMileTravelString: "2.3 km",
-          iconType: "ICON_TYPE_EMPTY",
-        },
-      },
-    },
-  ];
-  return (
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    const data = await fetch(
+      "https://www.swiggy.com/dapi/restaurants/list/v5?lat=28.7040592&lng=77.10249019999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
+    );
+    const json = await data.json();
+    setListOfRestaurants(
+      json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
+    );
+    setFilteredRestaurantCards(
+      json?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle?.restaurants
+    );
+  };
+
+  //Conditional Rendering
+  // if (listOfRestaurants.length === 0) {
+  //   return <Shimmer />;
+  // }
+
+  //Conditional Rendering with Ternery Operator
+  return listOfRestaurants.length === 0 ? (
+    <Shimmer />
+  ) : (
     <div className="body">
       <div className="filter">
+        <div className="search">
+          <input
+            type="text"
+            className="search-box"
+            value={searchText}
+            onChange={(e) => {
+              setSearchText(e.target.value);
+            }}
+          />
+          <button
+            className="search-btn"
+            onClick={() => {
+              //Filter the Restaurant Cards and update the UI on the basis of searchText
+              const filteredRestaurantCards = listOfRestaurants.filter(
+                (res) => {
+                  return res?.info?.name
+                    ?.toLowerCase()
+                    ?.includes(searchText?.toLowerCase());
+                }
+              );
+              setFilteredRestaurantCards(filteredRestaurantCards);
+            }}
+          >
+            Search
+          </button>
+        </div>
         <button
           className="filter-btn"
           onClick={() => {
@@ -91,7 +72,7 @@ const Body = () => {
             });
             setListOfRestaurants(filteredRestaurant);
 
-            //In case of Normal JS function
+            //In case of Normal JS function, UI doesn't update
             // listOfRestaurants = listOfRestaurants.filter((res) => {
             //   return res.info.avgRating > 4;
             // });
@@ -101,7 +82,7 @@ const Body = () => {
         </button>
       </div>
       <div className="res-container">
-        {listOfRestaurants.map((restaurant) => {
+        {filteredRestaurantCards.map((restaurant) => {
           return (
             <RestaurantCard key={restaurant.info.id} resData={restaurant} />
           );
